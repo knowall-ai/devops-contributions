@@ -47,9 +47,60 @@ bun run package-release
 
 ### Local Testing
 
+#### Option 1: Dev Build + Upload (Recommended)
+
+```bash
+# Build dev package (creates .vsix with "-dev" suffix)
+bun run package-dev
+```
+
 1. Upload the `.vsix` file to [VS Marketplace](https://marketplace.visualstudio.com/manage/publishers/knowall-ai)
 2. Share with your test organization
 3. Install from Organization Settings → Extensions → Shared
+4. Add the widget to a dashboard and test
+
+#### Option 2: Local Dev Server
+
+For faster iteration during development:
+
+```bash
+# Start webpack dev server on port 3000
+bun run dev
+```
+
+Then create a `vss-extension-dev.json` with:
+```json
+{
+  "baseUri": "https://localhost:3000"
+}
+```
+
+And use `tfx extension create --manifest vss-extension-dev.json` to create a dev extension that loads from localhost.
+
+> **Note:** You'll need to accept the self-signed certificate in Chrome by visiting `https://localhost:3000` first.
+
+#### Option 3: Direct Publish
+
+```bash
+# Publish directly to marketplace (requires MARKETPLACE_PAT env var)
+tfx extension publish --vsix knowall-ai.contributions-widget-dev*.vsix --token $MARKETPLACE_PAT
+```
+
+### Code Quality
+
+```bash
+# Run linter
+bun run lint
+
+# Fix lint issues
+bun run lint:fix
+
+# Check formatting
+bun run format:check
+
+# Fix formatting
+bun run format
+```
 
 ## CI/CD
 
