@@ -14,4 +14,4 @@ A clear and concise description of what the problem is. Ex. I'm always frustrate
 A clear and concise description of what you are going to implement.
 
 **Describe any help you would need implementing this feature**
-https://github.com/ostreifel/vsts-contributions#getting-started
+https://github.com/knowall-ai/devops-contributions#getting-started

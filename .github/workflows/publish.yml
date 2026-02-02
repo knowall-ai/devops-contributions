@@ -1,0 +1,63 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      publish_target:
+        description: 'Publish target'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - release
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Determine build type
+        id: build-type
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "type=${{ github.event.inputs.publish_target }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == *"-dev"* ]]; then
+            echo "type=dev" >> $GITHUB_OUTPUT
+          else
+            echo "type=release" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build development package
+        if: steps.build-type.outputs.type == 'dev'
+        run: bun run package-dev
+
+      - name: Build release package
+        if: steps.build-type.outputs.type == 'release'
+        run: bun run package-release
+
+      - name: Publish to Marketplace
+        run: |
+          npx tfx-cli extension publish \
+            --vsix knowall-ai.contributions-widget*.vsix \
+            --token ${{ secrets.MARKETPLACE_PAT }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix-package
+          path: '*.vsix'

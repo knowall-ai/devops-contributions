@@ -35,18 +35,21 @@ export interface IIndividualContributionFilter {
   repositories: { key: string; name: string }[];
 }
 
-export function deepEqual(x, y): boolean {
-  return (x && y && typeof x === 'object' && typeof y === 'object') ?
-    (Object.keys(x).length === Object.keys(y).length) &&
-    Object.keys(x).reduce(function (isEqual, key) {
-      return isEqual && deepEqual(x[key], y[key]);
-    }, true) : (x === y);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function deepEqual(x: any, y: any): boolean {
+  return x && y && typeof x === "object" && typeof y === "object"
+    ? Object.keys(x).length === Object.keys(y).length &&
+        Object.keys(x).reduce(function (isEqual: boolean, key: string): boolean {
+          return isEqual && deepEqual(x[key], y[key]);
+        }, true)
+    : x === y;
 }
 
 export function filterToIProperties(filter: IContributionFilter): IProperties {
   const properties: IProperties = {};
-  for (let providerKey in filter.enabledProviders) {
-    properties[providerKey] = String(filter.enabledProviders[providerKey]);
+  const providers = filter.enabledProviders as unknown as { [key: string]: boolean };
+  for (const providerKey in providers) {
+    properties[providerKey] = String(providers[providerKey]);
   }
   properties["allProjects"] = String(!!filter.allProjects);
   properties["sharedScale"] = String(!!filter.sharedScale);
@@ -58,18 +61,19 @@ export function filterToIProperties(filter: IContributionFilter): IProperties {
 export const defaultFilter: CachedValue<IContributionFilter> = new CachedValue(getDefaultFilter);
 async function getDefaultFilter(): Promise<IContributionFilter> {
   const defaultRepo = await defaultRepostory.getValue();
-  const repositories: { key: string, name: string }[] = [];
+  const repositories: { key: string; name: string }[] = [];
   if (defaultRepo) {
     repositories.push({ key: defaultRepo.id, name: defaultRepo.name });
   }
   const filter: IContributionFilter = {
-    identities: [{
-      displayName: VSS.getWebContext().user.name,
-      id: VSS.getWebContext().user.id,
-      uniqueName: VSS.getWebContext().user.email,
-      imageUrl: `${VSS.getWebContext().collection
-        .uri}_api/_common/identityImage?size=2&id=${VSS.getWebContext().user.id}`
-    }],
+    identities: [
+      {
+        displayName: VSS.getWebContext().user.name,
+        id: VSS.getWebContext().user.id,
+        uniqueName: VSS.getWebContext().user.email,
+        imageUrl: `${VSS.getWebContext().collection.uri}_api/_common/identityImage?size=2&id=${VSS.getWebContext().user.id}`,
+      },
+    ],
     allProjects: false,
     sharedScale: false,
     enabledProviders: {
@@ -86,4 +90,3 @@ async function getDefaultFilter(): Promise<IContributionFilter> {
   };
   return filter;
 }
-

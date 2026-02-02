@@ -6,7 +6,6 @@ import { renderFilters } from "./controls/filters";
 import { renderGraphs } from "./controls/showGraphs";
 import { defaultFilter, IContributionFilter } from "./filter";
 
-
 VSS.getService<HostNavigationService>(VSS.ServiceIds.Navigation).then(async (navService) => {
   function updateHash(filter: IContributionFilter) {
     const hash = encodeURIComponent(JSON.stringify(filter));
@@ -32,6 +31,5 @@ VSS.getService<HostNavigationService>(VSS.ServiceIds.Navigation).then(async (nav
   updateFromHash(hash);
   navService.onHashChanged(updateFromHash);
 });
-
 
 VSS.register(VSS.getContribution().id, {});

@@ -3,7 +3,7 @@ const gulp = require('gulp');
 const del = require("del");
 const yargs = require("yargs");
 const {exec, execSync} = require('child_process');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const tslint = require('gulp-tslint');
 const inlinesource = require('gulp-inline-source');
 
@@ -44,7 +44,7 @@ gulp.task('copy', gulp.series(
     'copy-html')
 );
 
-gulp.task('webpack', gulp.series(async () => {``
+gulp.task('webpack', gulp.series(async () => {
     const option = yargs.argv.release ? "-p" : "-d";
     execSync(`node ./node_modules/webpack-cli/bin/cli.js ${option}`, {
         stdio: [null, process.stdout, process.stderr]
@@ -73,7 +73,7 @@ gulp.task('package', gulp.series('clean', 'build', async () => {
 
             console.log(stdout);
             console.log(stderr);
-            
+
         });
 }));
 

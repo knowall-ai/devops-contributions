@@ -5,6 +5,8 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 module.exports = {
     entry: {
         contributionsHub: "./scripts/contributionsHub.tsx",
+        contributionsWidget: "./scripts/contributionsWidget.tsx",
+        contributionsWidgetConfiguration: "./scripts/contributionsWidgetConfiguration.tsx"
     },
     output: {
         libraryTarget: "amd",
@@ -16,7 +18,7 @@ module.exports = {
         "react": true,
         "react-dom": true
     },
-        /^TFS\//, // Ignore TFS/* since they are coming from VSTS host 
+        /^TFS\//, // Ignore TFS/* since they are coming from VSTS host
         /^VSS\//  // Ignore VSS/* since they are coming from VSTS host
     ],
     resolve: {
@@ -35,5 +37,5 @@ module.exports = {
         // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
         { test: /\.tsx?$/, loader: "ts-loader" }
       ]
-    } 
+    }
 };

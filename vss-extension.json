@@ -1,14 +1,14 @@
 {
     "manifestVersion": 1,
-    "id": "contributions",
-    "version": "2.1.26",
-    "name": "Contributions Graph",
+    "id": "contributions-widget",
+    "version": "3.0.10",
+    "name": "Contributions Widget",
     "scopes": [
         "vso.work",
         "vso.code"
     ],
-    "description": "View account contributions by user.",
-    "publisher": "ottostreifel",
+    "description": "Dashboard widget displaying a GitHub-style contribution graph tracking commits, pull requests, and work items.",
+    "publisher": "knowall-ai",
     "icons": {
         "default": "img/logo.png"
     },
@@ -28,7 +28,9 @@
         "Pull Request",
         "Commit",
         "Visualization",
-        "Contributions"
+        "Contributions",
+        "Dashboard",
+        "Widget"
     ],
     "content": {
         "details": {
@@ -37,11 +39,11 @@
     },
     "repository": {
         "type": "git",
-        "uri": "https://github.com/ostreifel/vsts-contributions"
+        "uri": "https://github.com/knowall-ai/devops-contributions"
     },
     "branding": {
-        "color": "rgb(220, 235, 252)",
-        "theme": "light"
+        "color": "#333732",
+        "theme": "dark"
     },
     "files": [
         {
@@ -54,21 +56,45 @@
         }
     ],
     "categories": [
-        "Collaborate"
+        "Azure Boards"
     ],
     "contributions": [
         {
-            "id": "contributions-hub",
-            "type": "ms.vss-web.hub",
-            "description": "View code and work item contributions.",
+            "id": "ContributionsWidget",
+            "type": "ms.vss-dashboards-web.widget",
             "targets": [
-                "ms.vss-work-web.work-hub-group"
+                "ms.vss-dashboards-web.widget-catalog"
             ],
             "properties": {
-                "group": "contributed",
-                "name": "Contributions Graph",
-                "uri": "dist/contributionsHub.html",
-                "icon": "asset://img/logo.png"
+                "name": "Contributions Widget",
+                "description": "GitHub-style contribution graph showing commits, PRs, and work items",
+                "catalogIconUrl": "img/logo.png",
+                "uri": "dist/contributionsWidget.html",
+                "supportedSizes": [
+                    {"rowSpan": 1, "columnSpan": 3},
+                    {"rowSpan": 1, "columnSpan": 4},
+                    {"rowSpan": 1, "columnSpan": 5},
+                    {"rowSpan": 2, "columnSpan": 4},
+                    {"rowSpan": 2, "columnSpan": 5},
+                    {"rowSpan": 2, "columnSpan": 6},
+                    {"rowSpan": 3, "columnSpan": 5},
+                    {"rowSpan": 3, "columnSpan": 6}
+                ],
+                "defaultSize": {"rowSpan": 2, "columnSpan": 5},
+                "supportedScopes": ["project_team"],
+                "configurationContributionId": "knowall-ai.contributions-widget.ContributionsWidget-Configuration"
+            }
+        },
+        {
+            "id": "ContributionsWidget-Configuration",
+            "type": "ms.vss-dashboards-web.widget-configuration",
+            "targets": [
+                "ms.vss-dashboards-web.widget-configuration"
+            ],
+            "properties": {
+                "name": "Contributions Graph Configuration",
+                "description": "Configure contribution filters",
+                "uri": "dist/contributionsWidgetConfiguration.html"
             }
         }
     ]

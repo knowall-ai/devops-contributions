@@ -1,0 +1,288 @@
+= Contributions Widget - Solution Design
+:toc:
+:toclevels: 3
+:icons: font
+
+== Overview
+
+The Contributions Widget is an Azure DevOps dashboard widget that displays a GitHub-style contribution graph tracking developer activity across commits, pull requests, and work items.
+
+== Architecture
+
+=== Component Diagram
+
+[source]
+----
+┌─────────────────────────────────────────────────────────────────┐
+│                     Azure DevOps Dashboard                       │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌──────────────────────┐    ┌─────────────────────────────┐   │
+│  │  ContributionsWidget │    │  ContributionsWidget-Config │   │
+│  │  (Widget Component)  │◄───│  (Configuration Panel)      │   │
+│  └──────────┬───────────┘    └─────────────────────────────┘   │
+│             │                                                    │
+│             ▼                                                    │
+│  ┌──────────────────────┐                                       │
+│  │    WidgetGraph       │                                       │
+│  │  (Activity Calendar) │                                       │
+│  └──────────┬───────────┘                                       │
+│             │                                                    │
+│             ▼                                                    │
+│  ┌──────────────────────┐                                       │
+│  │   Data Providers     │                                       │
+│  │  - Commits           │                                       │
+│  │  - Pull Requests     │                                       │
+│  │  - Work Items        │                                       │
+│  │  - Changesets (TFVC) │                                       │
+│  └──────────┬───────────┘                                       │
+│             │                                                    │
+│             ▼                                                    │
+│  ┌──────────────────────┐                                       │
+│  │  Azure DevOps APIs   │                                       │
+│  │  - Git REST API      │                                       │
+│  │  - Work Item API     │                                       │
+│  │  - TFVC API          │                                       │
+│  └──────────────────────┘                                       │
+└─────────────────────────────────────────────────────────────────┘
+----
+
+=== File Structure
+
+[source]
+----
+devops-contributions/
+├── scripts/
+│   ├── contributionsWidget.tsx       # Widget entry point
+│   ├── contributionsWidgetConfiguration.tsx  # Config panel
+│   ├── controls/
+│   │   ├── WidgetGraph.tsx          # Activity calendar component
+│   │   ├── IdentityPicker.tsx       # User selection
+│   │   └── ...
+│   ├── data/
+│   │   ├── provider.ts              # Contribution aggregator
+│   │   ├── git/
+│   │   │   ├── commits.ts           # Git commit provider
+│   │   │   └── pullrequests.ts      # PR provider
+│   │   ├── workitems.ts             # Work item provider
+│   │   └── tfvc/
+│   │       └── changsets.ts         # TFVC provider
+│   └── filter.ts                    # Filter configuration
+├── styles/
+│   ├── contributions.scss           # Main styles
+│   └── colors.scss                  # Theme color definitions
+├── contributionsWidget.html         # Widget HTML entry
+├── contributionsWidgetConfiguration.html  # Config HTML entry
+├── vss-extension.json               # Extension manifest
+└── docs/
+    ├── SOLUTION_DESIGN.adoc         # This document
+    └── TROUBLESHOOTING.adoc         # Common issues
+----
+
+== Extension Manifest
+
+=== Contribution Types
+
+The extension registers two contributions:
+
+[cols="1,1,2"]
+|===
+|ID |Type |Purpose
+
+|ContributionsWidget
+|ms.vss-dashboards-web.widget
+|Main dashboard widget
+
+|ContributionsWidget-Configuration
+|ms.vss-dashboards-web.widget-configuration
+|Widget settings panel
+|===
+
+=== Supported Widget Sizes
+
+[cols="1,1,2"]
+|===
+|Columns |Rows |Use Case
+
+|2 |1 |Compact - single user summary
+|3 |1 |Standard - single user with legend
+|4 |1 |Wide - comfortable single user
+|3 |2 |Tall - single user with details
+|4 |2 |Large - multiple users or detailed view
+|===
+
+=== Required Scopes
+
+[cols="1,2"]
+|===
+|Scope |Purpose
+
+|vso.work
+|Read work items (created, resolved, closed)
+
+|vso.code
+|Read Git commits, pull requests, TFVC changesets
+|===
+
+== Data Flow
+
+=== Contribution Loading
+
+[source]
+----
+1. Widget loads with saved settings (or defaults)
+2. Filter applied: user identity, projects, contribution types
+3. Data providers query Azure DevOps APIs in parallel:
+   - CommitContributionProvider
+   - CreatePullRequestProvider
+   - ClosePullRequestProvider
+   - ReviewPullRequestProvider
+   - CreateWorkItemContributionProvider
+   - ResolveWorkItemContributionProvider
+   - CloseWorkItemContributionProvider
+   - ChangesetContributionProvider
+4. Results aggregated by day
+5. Activity levels calculated (0-4 based on relative activity)
+6. Calendar rendered with theme colors
+----
+
+=== Configuration Flow
+
+[source]
+----
+1. User clicks widget configure button
+2. Configuration panel loads current settings
+3. User modifies:
+   - Target user identity
+   - Project scope (current vs all)
+   - Enabled contribution types
+4. Changes trigger ConfigurationChange event
+5. Widget preview updates in real-time
+6. User saves → settings persisted to dashboard
+----
+
+== Theming
+
+=== Azure DevOps Theme Integration
+
+The widget uses Azure DevOps CSS variables for colors, ensuring compatibility with:
+
+- Light theme
+- Dark theme
+- Organization custom themes
+
+=== Activity Level Colors
+
+[cols="1,2,2"]
+|===
+|Level |CSS Variable |Description
+
+|0 (none)
+|--palette-neutral-8
+|No activity (light gray)
+
+|1 (low)
+|--palette-primary-tint-20
+|Low activity (lightest primary)
+
+|2 (medium)
+|--palette-primary-tint-10
+|Medium activity
+
+|3 (high)
+|--palette-primary-shade-10
+|High activity
+
+|4 (max)
+|--palette-primary-shade-30
+|Maximum activity (darkest primary)
+|===
+
+== Technology Stack
+
+[cols="1,1,2"]
+|===
+|Technology |Version |Purpose
+
+|React
+|16.x
+|UI component framework
+
+|TypeScript
+|3.x
+|Type-safe JavaScript
+
+|Webpack
+|4.x
+|Module bundler
+
+|Gulp
+|4.x
+|Build task runner
+
+|Sass
+|1.x
+|CSS preprocessing
+
+|VSS SDK
+|5.x
+|Azure DevOps extension SDK
+|===
+
+== Build & Deployment
+
+=== Build Commands
+
+[source,bash]
+----
+# Install dependencies
+bun install
+
+# Build development package
+bun run package-dev
+
+# Build production package
+bun run package-release
+----
+
+=== Output Artifacts
+
+[cols="1,2"]
+|===
+|File |Description
+
+|knowall-ai.contributions-widget-dev-{version}.vsix
+|Development package (private)
+
+|knowall-ai.contributions-widget-{version}.vsix
+|Production package (public)
+|===
+
+=== Deployment Process
+
+1. Build package with `bun run package-dev`
+2. Upload to Visual Studio Marketplace
+3. Share with target organization(s)
+4. Install from Organization Settings → Extensions
+5. Add widget to dashboard
+
+== Security Considerations
+
+=== API Access
+
+- Extension uses delegated permissions via VSS SDK
+- No credentials stored in extension
+- API calls authenticated via user's Azure DevOps session
+
+=== Data Privacy
+
+- No data transmitted to external services
+- All processing occurs within Azure DevOps context
+- User activity visible only to those with dashboard access
+
+== Future Considerations
+
+- [ ] Support for multiple users in single widget
+- [ ] Date range selection
+- [ ] Export contribution data
+- [ ] Contribution tooltips with details
+- [ ] Keyboard navigation support

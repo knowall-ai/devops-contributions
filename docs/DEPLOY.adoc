@@ -1,0 +1,123 @@
+= Deployment Guide
+:toc:
+:toclevels: 2
+
+== Prerequisites
+
+* Node.js 18+ or Bun
+* Azure DevOps organization with admin access
+* Visual Studio Marketplace publisher account
+
+== Build
+
+[source,bash]
+----
+# Install dependencies
+bun install
+
+# Build development package (private, for testing)
+bun run package-dev
+
+# Build production package (public release)
+bun run package-release
+----
+
+Output: `knowall-ai.contributions-widget-dev-{version}.vsix`
+
+== Publish to Marketplace
+
+1. Go to https://marketplace.visualstudio.com/manage/publishers/knowall-ai
+2. Click the extension or **New extension** → **Azure DevOps**
+3. Upload the `.vsix` file
+4. Wait for validation (1-2 minutes)
+
+== Share with Organization (Private Testing)
+
+1. In the Marketplace publisher portal, click the extension
+2. Click **Share/Unshare**
+3. Enter the organization name (e.g., `KnowAllTest`)
+4. Click **Save**
+
+== Install in Organization
+
+1. Go to `https://dev.azure.com/{org}/_settings/extensions`
+2. Click **Shared** tab
+3. Find "Contributions Widget" and click **Install**
+4. Select the organization and click **Install**
+
+== Add Widget to Dashboard
+
+1. Navigate to any project dashboard
+2. Click **Edit**
+3. Click **Add a widget**
+4. Search for "Contributions Widget"
+5. Click **Add**
+6. Configure the widget (user, contribution types)
+7. Click **Save**
+
+== Update Existing Installation
+
+When uploading a new version:
+
+1. Upload new `.vsix` to Marketplace
+2. Shared organizations automatically receive updates
+3. Users may need to refresh their browser
+
+== CI/CD with GitHub Actions
+
+The repository includes a GitHub Actions workflow for automated publishing.
+
+=== Setup
+
+1. Create a Personal Access Token (PAT) in Azure DevOps:
+   - Go to https://dev.azure.com → User icon → **Personal access tokens**
+   - Click **+ New Token**
+   - Name: `Marketplace Publisher`
+   - Organization: **All accessible organizations** (required for marketplace)
+   - Scopes: **Custom defined**
+   - Find **Marketplace** section and check **Publish**
+   - Click **Create** and copy the token
+2. Add the token as a GitHub secret named `MARKETPLACE_PAT`
+   - Go to repo **Settings** → **Secrets and variables** → **Actions**
+   - Click **New repository secret**
+
+=== Automatic Publishing
+
+Push a version tag to trigger a release:
+
+[source,bash]
+----
+git tag v3.1.0
+git push origin v3.1.0
+----
+
+- Tags containing `-dev` publish as development (private)
+- Other tags publish as release (public)
+
+=== Manual Publishing
+
+1. Go to **Actions** → **Publish Extension**
+2. Click **Run workflow**
+3. Select `dev` or `release`
+4. Click **Run workflow**
+
+== Uninstall
+
+1. Go to `https://dev.azure.com/{org}/_settings/extensions`
+2. Find "Contributions Widget"
+3. Click **...** → **Uninstall**
+
+== Version History
+
+[cols="1,1,3"]
+|===
+|Version |Date |Changes
+
+|3.0.5
+|2026-02-02
+|Dashboard widget release, new logo, Azure DevOps theme colors
+
+|2.x
+|2020
+|Original hub extension by ottostreifel (discontinued)
+|===

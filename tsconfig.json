@@ -11,10 +11,16 @@
         "strictNullChecks": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
         "lib": [
             "es2015.promise",
             "dom",
             "es5"
         ]
-    }
+    },
+    "exclude": [
+        "node_modules/@types/jqueryui"
+    ]
 }

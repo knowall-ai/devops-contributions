@@ -4,5 +4,5 @@ import { CachedValue } from "./CachedValue";
 
 export const projectsVal = new CachedValue(getProjects);
 function getProjects(): PromiseLike<TeamProjectReference[]> {
-    return getClient().getProjects();
+  return getClient().getProjects();
 }

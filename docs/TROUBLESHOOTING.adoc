@@ -1,0 +1,27 @@
+= Troubleshooting
+
+[cols="1,2"]
+|===
+|Problem |Solution
+
+|**SVG file types not supported** when uploading to Marketplace
+|Convert SVG to PNG: `convert -density 300 logo.svg -resize 128x128 logo.png` then delete the SVG file.
+
+|**node-sass build failure** with gyp errors
+|Replace `node-sass` with Dart Sass: use `"gulp-sass": "^5.1.0"` and `"sass": "^1.71.0"` in package.json, update gulpfile to `require('gulp-sass')(require('sass'))`.
+
+|**@types/jqueryui TypeScript errors** (TS1110)
+|Pin compatible version: `"@types/jqueryui": "1.12.7"` in package.json.
+
+|**Widget not appearing** in dashboard catalog
+|Verify extension is shared with your organization and installed from Organization Settings → Extensions → Shared tab.
+
+|**Configuration not saving**
+|Ensure `configurationContributionId` matches pattern: `{publisher}.{extension-id}.{config-id}`.
+
+|**tfx: command not found** during build
+|Install tfx-cli: `npm install -g tfx-cli`.
+
+|**Contributions not loading**
+|Check that the extension has `vso.work` and `vso.code` scopes, and user has permissions to view work items and code.
+|===

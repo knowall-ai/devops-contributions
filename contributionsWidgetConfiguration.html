@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <script inline src="dist/VSS.SDK.min.js"></script>
+    <link inline href="dist/contributions.css" rel="stylesheet" />
+</head>
+<body class="contributions-body configuration">
+    <div class="configuration-container"></div>
+    <script type="text/javascript">
+        VSS.init({
+            explicitNotifyLoaded: true,
+            usePlatformScripts: true,
+            configureModuleLoader: true,
+            applyTheme: true
+        });
+
+        VSS.require([
+            "react",
+            "react-dom",
+            "TFS/VersionControl/Contracts",
+            "TFS/VersionControl/GitRestClient",
+            "TFS/Core/Contracts",
+            "TFS/Core/RestClient",
+            "VSS/WebApi/Contracts",
+            "TFS/Dashboards/WidgetHelpers",
+            "dist/contributionsWidgetConfiguration"
+        ], function () {
+            // notifyLoadSucceeded is called by contributionsWidgetConfiguration.tsx
+        });
+    </script>
+</body>
+</html>

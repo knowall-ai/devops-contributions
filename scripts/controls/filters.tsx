@@ -1,4 +1,4 @@
-import { IToggleProps, Toggle } from "office-ui-fabric-react/lib-amd/components/toggle";
+import { IToggleProps, Toggle } from "office-ui-fabric-react/lib-amd/components/Toggle";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
@@ -17,11 +17,14 @@ class FocusToggle extends React.Component<IToggleProps, { focus: boolean }> {
   }
   render() {
     const classes = this.props.className || "";
-    return <Toggle {...this.props}
-      className={this.state.focus ? `focus ${classes}` : classes}
-      onFocus={() => this.setState({ focus: true })}
-      onBlur={() => this.setState({ focus: false })}
-    />;
+    return (
+      <Toggle
+        {...this.props}
+        className={this.state.focus ? `focus ${classes}` : classes}
+        onFocus={() => this.setState({ focus: true })}
+        onBlur={() => this.setState({ focus: false })}
+      />
+    );
   }
 }
 
@@ -29,13 +32,19 @@ interface IProviderToggleProps {
   providers: IEnabledProviders;
   label: string;
   provider: ContributionName;
-  providerChange: (provider: ContributionName, checked: boolean) => {};
+  providerChange: (provider: ContributionName, checked: boolean) => void;
 }
 
 class ProviderToggle extends React.Component<IProviderToggleProps, {}> {
   render() {
     const { providers, provider, label, providerChange } = this.props;
-    return <FocusToggle checked={providers[provider]} label={label} onChanged={checked => providerChange(provider, checked)} />;
+    return (
+      <FocusToggle
+        checked={providers[provider]}
+        label={label}
+        onChanged={(checked: boolean) => providerChange(provider, checked)}
+      />
+    );
   }
 }
 
@@ -45,52 +54,89 @@ interface IFiltersProps {
   collapsible?: boolean;
 }
 
-class Filters extends React.Component<
-  IFiltersProps, {}
-  > {
+class Filters extends React.Component<IFiltersProps, {}> {
   render() {
     const filter = this.props.filter;
     const providerToggleProps = {
       providers: filter.enabledProviders,
-      providerChange: this.updateProvider.bind(this)
+      providerChange: this.updateProvider.bind(this),
     };
-    const collapsibleContent =
+    const collapsibleContent = (
       <div>
         <IdentityPicker
           identities={filter.identities}
-          onIdentityChanged={identities => {
+          onIdentityChanged={(identities) => {
             this.updateFilter({ ...filter, identities });
           }}
           forceValue={true}
           width={400}
         />
         <div className="filters">
-          <FocusToggle checked={filter.allProjects} label={"All projects"} onChanged={checked => {
-            this.updateFilter({ allProjects: checked });
-          }} />
-          <FocusToggle checked={filter.sharedScale} label={"Shared Scale"} onChanged={checked => {
-            this.updateFilter({ sharedScale: checked });
-          }} />
+          <FocusToggle
+            checked={filter.allProjects}
+            label={"All projects"}
+            onChanged={(checked: boolean) => {
+              this.updateFilter({ allProjects: checked });
+            }}
+          />
+          <FocusToggle
+            checked={filter.sharedScale}
+            label={"Shared Scale"}
+            onChanged={(checked: boolean) => {
+              this.updateFilter({ sharedScale: checked });
+            }}
+          />
           <ProviderToggle {...providerToggleProps} label={"Commits"} provider={"Commit"} />
-          <ProviderToggle {...providerToggleProps} label={"Created pull requests"} provider={"CreatePullRequest"} />
-          <ProviderToggle {...providerToggleProps} label={"Closed pull requests"} provider={"ClosePullRequest"} />
-          <ProviderToggle {...providerToggleProps} label={"Reviewed pull requests"} provider={"ReviewPullRequest"} />
-          <ProviderToggle {...providerToggleProps} label={"Created work items"} provider={"CreateWorkItem"} />
-          <ProviderToggle {...providerToggleProps} label={"Resolved work items"} provider={"ResolveWorkItem"} />
-          <ProviderToggle {...providerToggleProps} label={"Closed work items"} provider={"CloseWorkItem"} />
-          <ProviderToggle {...providerToggleProps} label={"Created changesets"} provider={"Changeset"} />
+          <ProviderToggle
+            {...providerToggleProps}
+            label={"Created pull requests"}
+            provider={"CreatePullRequest"}
+          />
+          <ProviderToggle
+            {...providerToggleProps}
+            label={"Closed pull requests"}
+            provider={"ClosePullRequest"}
+          />
+          <ProviderToggle
+            {...providerToggleProps}
+            label={"Reviewed pull requests"}
+            provider={"ReviewPullRequest"}
+          />
+          <ProviderToggle
+            {...providerToggleProps}
+            label={"Created work items"}
+            provider={"CreateWorkItem"}
+          />
+          <ProviderToggle
+            {...providerToggleProps}
+            label={"Resolved work items"}
+            provider={"ResolveWorkItem"}
+          />
+          <ProviderToggle
+            {...providerToggleProps}
+            label={"Closed work items"}
+            provider={"CloseWorkItem"}
+          />
+          <ProviderToggle
+            {...providerToggleProps}
+            label={"Created changesets"}
+            provider={"Changeset"}
+          />
           <CompletionDropdown
             label="Repository"
             selected={filter.repositories}
-            resolveSuggestions={(search, selected) => searchRepositories(filter.allProjects, search, selected)}
-            onSelectionChanged={repositories => this.updateFilter({ repositories })}
+            resolveSuggestions={(search, selected) =>
+              searchRepositories(filter.allProjects, search, selected)
+            }
+            onSelectionChanged={(repositories) => this.updateFilter({ repositories })}
             placeholder={"Search repositories..."}
           />
         </div>
-      </div>;
+      </div>
+    );
     return (
       <div>
-        {this.props.collapsible ?
+        {this.props.collapsible ? (
           <CollapsibleHeader
             title="Activity Filters"
             buttonName="Filters"
@@ -98,8 +144,10 @@ class Filters extends React.Component<
             level={4}
           >
             {collapsibleContent}
-          </CollapsibleHeader> : collapsibleContent
-        }
+          </CollapsibleHeader>
+        ) : (
+          collapsibleContent
+        )}
       </div>
     );
   }
@@ -114,18 +162,13 @@ class Filters extends React.Component<
   }
 }
 
-
 export function renderFilters(
   onChanged: (filter: IContributionFilter) => void,
   initialFilter: IContributionFilter,
   collapsible: boolean = true,
-  callback?: () => void,
+  callback?: () => void
 ) {
   const props = { onChanged, filter: initialFilter, collapsible };
   const graphParent = $(".filter-container")[0];
-  ReactDOM.render(
-    <Filters {...props} />,
-    graphParent,
-    callback
-  );
+  ReactDOM.render(<Filters {...props} />, graphParent, callback);
 }
