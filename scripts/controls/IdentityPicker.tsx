@@ -29,8 +29,8 @@ const identitiesCache = new CachedValue(async () => {
     const identity = identitiesMap[id];
     identities.push({
       displayName: identity.displayName,
-      uniqueName: identity.uniqueName,
-      imageUrl: identity.imageUrl,
+      uniqueName: identity.uniqueName || "",
+      imageUrl: identity.imageUrl || "",
       id: identity.id,
     });
   }
@@ -45,6 +45,7 @@ interface IdentityPickerState {
 
 export class IdentityPicker extends React.Component<IIdentityPickerProps, IdentityPickerState> {
   private comboboxId = `identity-picker-${Math.random().toString(36).substr(2, 9)}`;
+  private searchRequestId = 0;
 
   constructor(props: IIdentityPickerProps) {
     super(props);
@@ -71,9 +72,13 @@ export class IdentityPicker extends React.Component<IIdentityPickerProps, Identi
   }
 
   private async handleInputChange(value: string) {
+    const requestId = ++this.searchRequestId;
     this.setState({ query: value, loading: true });
     const suggestions = await this.searchIdentities(value);
-    this.setState({ suggestions, loading: false });
+    // Only update if this is still the latest request (prevents race conditions)
+    if (requestId === this.searchRequestId) {
+      this.setState({ suggestions, loading: false });
+    }
   }
 
   private handleSelect(_e: unknown, data: { optionValue?: string }) {

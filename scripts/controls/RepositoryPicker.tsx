@@ -28,6 +28,8 @@ export class RepositoryPicker extends React.Component<
   IRepositoryPickerProps,
   RepositoryPickerState
 > {
+  private searchRequestId = 0;
+
   constructor(props: IRepositoryPickerProps) {
     super(props);
     this.state = {
@@ -70,9 +72,13 @@ export class RepositoryPicker extends React.Component<
   }
 
   private async handleInputChange(value: string) {
+    const requestId = ++this.searchRequestId;
     this.setState({ query: value, loading: true });
     const suggestions = await this.searchRepositories(value);
-    this.setState({ suggestions, loading: false });
+    // Only update if this is still the latest request (prevents race conditions)
+    if (requestId === this.searchRequestId) {
+      this.setState({ suggestions, loading: false });
+    }
   }
 
   private handleSelect(_e: unknown, data: { optionValue?: string }) {
