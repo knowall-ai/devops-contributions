@@ -17,8 +17,8 @@
     "@types/jquery": "3.3.38",
     "@types/jqueryui": "1.12.7",
     "@types/knockout": "^3.4.40",
-    "@types/react": "^16.14.0",
-    "@types/react-dom": "^16.9.0",
+    "@types/react": "18",
+    "@types/react-dom": "18",
     "@types/requirejs": "^2.1.28",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
@@ -37,16 +37,18 @@
     "promise-polyfill": "^8.1.0",
     "requirejs": "^2.3.2",
     "sass": "^1.71.0",
-    "ts-loader": "^4.2.0",
+    "ts-loader": "9",
     "tslint": "^5.4.3",
-    "typescript": "^3.1.6",
+    "typescript": "5",
     "vss-web-extension-sdk": "^5.141.0",
-    "webpack": "^4.42.1",
+    "webpack": "5",
     "webpack-bundle-analyzer": "^3.5.2",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "5"
   },
   "dependencies": {
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0"
+    "@fluentui/react-components": "^9.72.11",
+    "react": "18",
+    "react-activity-calendar": "^3.1.1",
+    "react-dom": "18"
   }
 }

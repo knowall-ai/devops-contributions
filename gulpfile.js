@@ -45,8 +45,9 @@ gulp.task('copy', gulp.series(
 );
 
 gulp.task('webpack', gulp.series(async () => {
-    const option = yargs.argv.release ? "-p" : "-d";
-    execSync(`node ./node_modules/webpack-cli/bin/cli.js ${option}`, {
+    // Webpack 5 uses --mode instead of -d/-p flags
+    const mode = yargs.argv.release ? "production" : "development";
+    execSync(`node ./node_modules/webpack-cli/bin/cli.js --mode ${mode}`, {
         stdio: [null, process.stdout, process.stderr]
     });
 }));
