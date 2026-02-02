@@ -13,9 +13,12 @@ import { WidgetGraph } from "./controls/WidgetGraph";
 import { IIdentity } from "./controls/IdentityPicker";
 
 type UserMode = "specific" | "all";
+type RepoMode = "specific" | "all";
 
 interface ExtendedFilter extends IContributionFilter {
   userMode?: UserMode;
+  repoMode?: RepoMode;
+  showFiltersOnWidget?: boolean;
 }
 
 interface WidgetSettings {
@@ -108,6 +111,30 @@ class ContributionsWidget extends React.Component<{ settings: WidgetSettings }, 
     this.setState({ selectedUserId }, () => this.loadContributions());
   }
 
+  renderFilterSummary() {
+    const { filter } = this.props.settings;
+    if (!filter.showFiltersOnWidget) return null;
+
+    const userLabel =
+      filter.userMode === "all"
+        ? "All contributors"
+        : filter.identities?.length
+          ? `${filter.identities.length} user${filter.identities.length > 1 ? "s" : ""}`
+          : "No users selected";
+
+    const repoLabel =
+      filter.repoMode === "specific" && filter.repositories?.length
+        ? `${filter.repositories.length} repo${filter.repositories.length > 1 ? "s" : ""}`
+        : "All repositories";
+
+    return (
+      <div className="filter-summary">
+        <span className="filter-tag">{userLabel}</span>
+        <span className="filter-tag">{repoLabel}</span>
+      </div>
+    );
+  }
+
   render() {
     const { loading, error, contributions, allUsers, selectedUserId } = this.state;
     const { filter } = this.props.settings;
@@ -185,6 +212,7 @@ class ContributionsWidget extends React.Component<{ settings: WidgetSettings }, 
           {contributions.map((userContributions, index) => (
             <WidgetGraph key={userContributions.key || index} contributions={userContributions} />
           ))}
+          {this.renderFilterSummary()}
         </div>
       </FluentProvider>
     );

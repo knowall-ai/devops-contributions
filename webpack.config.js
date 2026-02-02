@@ -4,7 +4,6 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = {
     entry: {
-        contributionsHub: "./scripts/contributionsHub.tsx",
         contributionsWidget: "./scripts/contributionsWidget.tsx",
         contributionsWidgetConfiguration: "./scripts/contributionsWidgetConfiguration.tsx"
     },
