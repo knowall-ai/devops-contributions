@@ -1,12 +1,5 @@
 import * as React from "react";
-import {
-  Combobox,
-  Option,
-  Persona,
-  Tag,
-  TagGroup,
-  ComboboxProps,
-} from "@fluentui/react-components";
+import { Combobox, Option, Persona, Tag, TagGroup } from "@fluentui/react-components";
 import { Dismiss12Regular } from "@fluentui/react-icons";
 import { getIdentities } from "../data/identities/getIdentities";
 import { CachedValue } from "../data/CachedValue";
@@ -77,14 +70,16 @@ export class IdentityPicker extends React.Component<IIdentityPickerProps, Identi
     );
   }
 
-  private handleInputChange = async (value: string) => {
+  private async handleInputChange(value: string) {
     this.setState({ query: value, loading: true });
     const suggestions = await this.searchIdentities(value);
     this.setState({ suggestions, loading: false });
-  };
+  }
 
-  private handleSelect: ComboboxProps["onOptionSelect"] = (_e, data) => {
-    if (!data.optionValue) return;
+  private handleSelect(_e: unknown, data: { optionValue?: string }) {
+    if (!data.optionValue) {
+      return;
+    }
 
     const selectedIdentity = this.state.suggestions.find((i) => i.id === data.optionValue);
 
@@ -98,14 +93,14 @@ export class IdentityPicker extends React.Component<IIdentityPickerProps, Identi
 
     // Clear the search
     this.setState({ query: "" });
-  };
+  }
 
-  private handleRemove = (identityId: string) => {
+  private handleRemove(identityId: string) {
     if (this.props.onIdentityChanged) {
       const updated = this.props.identities.filter((i) => i.id !== identityId);
       this.props.onIdentityChanged(updated);
     }
-  };
+  }
 
   componentDidMount() {
     // Load initial suggestions
@@ -151,7 +146,7 @@ export class IdentityPicker extends React.Component<IIdentityPickerProps, Identi
             placeholder={placeholder || "Search for users..."}
             value={query}
             onChange={(e) => this.handleInputChange(e.target.value)}
-            onOptionSelect={this.handleSelect}
+            onOptionSelect={(e, data) => this.handleSelect(e, data)}
             freeform
             style={{ width: "100%" }}
           >

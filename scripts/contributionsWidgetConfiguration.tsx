@@ -140,7 +140,9 @@ class ConfigurationPanel extends React.Component<ConfigurationProps, Record<stri
 
   private getSelectedRepos(): IRepository[] {
     const { repositories } = this.props.filter;
-    if (!repositories) return [];
+    if (!repositories) {
+      return [];
+    }
     return repositories.map((r) => ({
       id: r.key,
       name: r.name,

@@ -113,7 +113,9 @@ class ContributionsWidget extends React.Component<{ settings: WidgetSettings }, 
 
   renderFilterSummary() {
     const { filter } = this.props.settings;
-    if (!filter.showFiltersOnWidget) return null;
+    if (!filter.showFiltersOnWidget) {
+      return null;
+    }
 
     const userLabel =
       filter.userMode === "all"

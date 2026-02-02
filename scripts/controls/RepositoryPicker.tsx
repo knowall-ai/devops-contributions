@@ -69,14 +69,16 @@ export class RepositoryPicker extends React.Component<
       }));
   }
 
-  private handleInputChange = async (value: string) => {
+  private async handleInputChange(value: string) {
     this.setState({ query: value, loading: true });
     const suggestions = await this.searchRepositories(value);
     this.setState({ suggestions, loading: false });
-  };
+  }
 
-  private handleSelect = (_e: unknown, data: { optionValue?: string }) => {
-    if (!data.optionValue) return;
+  private handleSelect(_e: unknown, data: { optionValue?: string }) {
+    if (!data.optionValue) {
+      return;
+    }
 
     const selectedRepo = this.state.suggestions.find((r) => r.id === data.optionValue);
 
@@ -88,14 +90,14 @@ export class RepositoryPicker extends React.Component<
     }
 
     this.setState({ query: "" });
-  };
+  }
 
-  private handleRemove = (repoId: string) => {
+  private handleRemove(repoId: string) {
     if (this.props.onRepositoriesChanged) {
       const updated = this.props.repositories.filter((r) => r.id !== repoId);
       this.props.onRepositoriesChanged(updated);
     }
-  };
+  }
 
   componentDidMount() {
     this.handleInputChange("");
@@ -139,7 +141,7 @@ export class RepositoryPicker extends React.Component<
             placeholder={placeholder || "Search repositories..."}
             value={query}
             onChange={(e) => this.handleInputChange(e.target.value)}
-            onOptionSelect={this.handleSelect}
+            onOptionSelect={(e, data) => this.handleSelect(e, data)}
             freeform
             style={{ width: "100%" }}
           >
