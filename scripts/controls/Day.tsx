@@ -69,7 +69,7 @@ export class Day extends React.Component<DayProps, DayState> {
   private readonly showCalloutDelay = new DelayedFunction(null, 200, "", () =>
     this.showCalloutNow(true)
   );
-  private delayedShowCallout(show: boolean = true) {
+  private delayedShowCallout(show = true) {
     if (show) {
       this.showCalloutDelay.reset();
     } else {
@@ -77,7 +77,7 @@ export class Day extends React.Component<DayProps, DayState> {
       this.showCalloutNow(false);
     }
   }
-  private showCalloutNow(show: boolean = true) {
+  private showCalloutNow(show = true) {
     if (this.state.hover !== show) {
       this.setState({ ...this.state, hover: show });
     }

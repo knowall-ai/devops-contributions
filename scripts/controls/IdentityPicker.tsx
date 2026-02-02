@@ -30,7 +30,7 @@ const suggestionProps: IBasePickerSuggestionsProps = {
   loadingText: "Loading",
 };
 
-export class IdentityPicker extends React.Component<IIdentityPickerProps, {}> {
+export class IdentityPicker extends React.Component<IIdentityPickerProps, Record<string, never>> {
   render() {
     return (
       <div className="identity-picker">

@@ -17,8 +17,11 @@ interface ICompletionDropdownProps {
   label?: string;
 }
 
-export class CompletionDropdown extends React.Component<ICompletionDropdownProps, {}> {
-  private static counter: number = 0;
+export class CompletionDropdown extends React.Component<
+  ICompletionDropdownProps,
+  Record<string, never>
+> {
+  private static counter = 0;
   private readonly key: number;
   constructor(props: ICompletionDropdownProps) {
     super(props);

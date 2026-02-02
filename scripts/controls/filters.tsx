@@ -1,6 +1,6 @@
 import { IToggleProps, Toggle } from "office-ui-fabric-react/lib-amd/components/Toggle";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot, Root } from "react-dom/client";
 
 import { ContributionName } from "../data/contracts";
 import { searchRepositories } from "../data/git/repositories";
@@ -35,7 +35,7 @@ interface IProviderToggleProps {
   providerChange: (provider: ContributionName, checked: boolean) => void;
 }
 
-class ProviderToggle extends React.Component<IProviderToggleProps, {}> {
+class ProviderToggle extends React.Component<IProviderToggleProps, Record<string, never>> {
   render() {
     const { providers, provider, label, providerChange } = this.props;
     return (
@@ -54,7 +54,7 @@ interface IFiltersProps {
   collapsible?: boolean;
 }
 
-class Filters extends React.Component<IFiltersProps, {}> {
+class Filters extends React.Component<IFiltersProps, Record<string, never>> {
   render() {
     const filter = this.props.filter;
     const providerToggleProps = {
@@ -162,13 +162,20 @@ class Filters extends React.Component<IFiltersProps, {}> {
   }
 }
 
+let filterRoot: Root | null = null;
 export function renderFilters(
   onChanged: (filter: IContributionFilter) => void,
   initialFilter: IContributionFilter,
-  collapsible: boolean = true,
+  collapsible = true,
   callback?: () => void
 ) {
   const props = { onChanged, filter: initialFilter, collapsible };
   const graphParent = $(".filter-container")[0];
-  ReactDOM.render(<Filters {...props} />, graphParent, callback);
+  if (!filterRoot) {
+    filterRoot = createRoot(graphParent);
+  }
+  filterRoot.render(<Filters {...props} />);
+  if (callback) {
+    callback();
+  }
 }

@@ -133,8 +133,8 @@ export class Graph extends React.Component<
         counts[0].count++;
       }
     }
-    return counts.map(({ idx, count }) => (
-      <div className="month" style={{ flexGrow: count }}>
+    return counts.map(({ idx, count }, i) => (
+      <div key={`${idx}-${i}`} className="month" style={{ flexGrow: count }}>
         {monthNames[idx]}
       </div>
     ));
@@ -172,7 +172,7 @@ export class Graph extends React.Component<
     return days;
   }
 
-  private updateSelectedDate(date: Date, expand: boolean = false) {
+  private updateSelectedDate(date: Date, expand = false) {
     let { startDate, endDate } = this.state.selected || ({} as ISelectedRange);
     if (!expand || !startDate || !endDate) {
       startDate = date;

@@ -17,7 +17,7 @@ import {
 
 export class Commits extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -34,7 +34,7 @@ export class Commits extends React.Component<
 
 export class CreatePullRequests extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -53,7 +53,7 @@ export class CreatePullRequests extends React.Component<
 
 export class ClosePullRequests extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -70,7 +70,7 @@ export class ClosePullRequests extends React.Component<
 
 export class ReviewPullRequests extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -89,7 +89,7 @@ export class ReviewPullRequests extends React.Component<
 
 export class CreateWorkItems extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -106,7 +106,7 @@ export class CreateWorkItems extends React.Component<
 
 export class ResolveWorkItems extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -123,7 +123,7 @@ export class ResolveWorkItems extends React.Component<
 
 export class CloseWorkItems extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -140,7 +140,7 @@ export class CloseWorkItems extends React.Component<
 
 export class Changesets extends React.Component<
   { allContributions: UserContribution[]; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     return (
@@ -166,7 +166,7 @@ class Contributions<T> extends React.Component<
   }
 > {
   render() {
-    let { noun } = this.props;
+    const { noun } = this.props;
     const count = this.props.items.length;
     const label = count === 1 ? noun : noun + "s";
     const title = label.match(/#/) ? label.replace("#", "" + count) : count + " " + label;

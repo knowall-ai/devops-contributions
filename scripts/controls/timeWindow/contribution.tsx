@@ -20,7 +20,7 @@ class ContributionItem extends React.Component<
     showDay: boolean;
     className?: string;
   },
-  {}
+  Record<string, never>
 > {
   render() {
     const { title, titleUrl, location, locationUrl, date, showDay, className } = this.props;
@@ -34,7 +34,13 @@ class ContributionItem extends React.Component<
         aria-label={this.props.title}
       >
         <FocusZone direction={FocusZoneDirection.horizontal}>
-          <a className="title" href={titleUrl} target="_blank" onClick={this._onClick(titleUrl)}>
+          <a
+            className="title"
+            href={titleUrl}
+            target="_blank"
+            onClick={this._onClick(titleUrl)}
+            rel="noreferrer"
+          >
             {title}
           </a>
           <div className="location-time">
@@ -44,6 +50,7 @@ class ContributionItem extends React.Component<
               href={locationUrl}
               target="_blank"
               onClick={this._onClick(locationUrl)}
+              rel="noreferrer"
             >
               {location}
             </a>
@@ -77,7 +84,7 @@ class ContributionItem extends React.Component<
 
 export class Changeset extends React.Component<
   { changeset: ChangesetContribution; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     const { showDay } = this.props;
@@ -100,7 +107,10 @@ export class Changeset extends React.Component<
   }
 }
 
-export class Commit extends React.Component<{ commit: CommitContribution; showDay: boolean }, {}> {
+export class Commit extends React.Component<
+  { commit: CommitContribution; showDay: boolean },
+  Record<string, never>
+> {
   render() {
     const { repo, commit } = this.props.commit;
     const { showDay } = this.props;
@@ -111,7 +121,7 @@ export class Commit extends React.Component<{ commit: CommitContribution; showDa
         location={repo.name}
         locationUrl={repo.remoteUrl}
         showDay={showDay}
-        date={new Date(commit.author.date as any)}
+        date={new Date(commit.author.date as string | number)}
         className="commit"
       />
     );
@@ -120,7 +130,7 @@ export class Commit extends React.Component<{ commit: CommitContribution; showDa
 
 export class PullRequest extends React.Component<
   { pullrequest: PullRequestContribution; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     const { date, pullrequest } = this.props.pullrequest;
@@ -147,7 +157,7 @@ export class PullRequest extends React.Component<
 
 export class WorkItemComponent extends React.Component<
   { workItem: WorkItemContribution; showDay: boolean },
-  {}
+  Record<string, never>
 > {
   render() {
     const { date, wi } = this.props.workItem;

@@ -33,7 +33,7 @@ export class TimeWindow extends React.Component<
     super(props);
     this.state = { contributions: this.getContributions(props) };
   }
-  componentWillReceiveProps(props: ITimeWindowProps) {
+  UNSAFE_componentWillReceiveProps(props: ITimeWindowProps) {
     this.setState({ contributions: this.getContributions(props) });
   }
   render() {

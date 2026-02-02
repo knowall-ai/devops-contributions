@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot, Root } from "react-dom/client";
 import { DelayedFunction } from "VSS/Utils/Core";
 
 import { IUserContributions } from "../data/contracts";
@@ -10,8 +10,18 @@ import { Timings } from "../timings";
 import { Graphs } from "./Graphs";
 
 let renderNum = 0;
+let graphsRoot: Root | null = null;
+
+function getRoot(): Root {
+  if (!graphsRoot) {
+    const graphParent = $(".graphs-container")[0];
+    graphsRoot = createRoot(graphParent);
+  }
+  return graphsRoot;
+}
+
 export function renderGraphs(filter: IContributionFilter) {
-  const graphParent = $(".graphs-container")[0];
+  const root = getRoot();
   const timings = new Timings();
   const currentRender = ++renderNum;
   /** Don't show the spinner all the time -- rendering the graph takes about 300 ms */
@@ -20,13 +30,10 @@ export function renderGraphs(filter: IContributionFilter) {
       const loadingContributions = filter.identities.map(
         (user): IUserContributions => ({ key: -1, data: {}, user })
       );
-      ReactDOM.render(
-        <Graphs contributions={loadingContributions} loading={true} sharedScale={false} />,
-        graphParent,
-        () => {
-          timings.measure("drawSpinner");
-        }
+      root.render(
+        <Graphs contributions={loadingContributions} loading={true} sharedScale={false} />
       );
+      timings.measure("drawSpinner");
     }
   });
   showSpinner.start();
@@ -35,14 +42,11 @@ export function renderGraphs(filter: IContributionFilter) {
       showSpinner.cancel();
       if (currentRender === renderNum) {
         timings.measure("getContributions");
-        ReactDOM.render(
-          <Graphs contributions={contributions} loading={false} sharedScale={filter.sharedScale} />,
-          graphParent,
-          () => {
-            timings.measure("drawGraph");
-            trackEvent("loadGraph", filterToIProperties(filter), timings.measurements);
-          }
+        root.render(
+          <Graphs contributions={contributions} loading={false} sharedScale={filter.sharedScale} />
         );
+        timings.measure("drawGraph");
+        trackEvent("loadGraph", filterToIProperties(filter), timings.measurements);
       }
     },
     (error) => {

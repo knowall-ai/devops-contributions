@@ -9,7 +9,7 @@ export class Graphs extends React.Component<
     loading: boolean;
     sharedScale: boolean;
   },
-  {}
+  Record<string, never>
 > {
   public render() {
     let overrideLargest = 0;
@@ -28,6 +28,7 @@ export class Graphs extends React.Component<
       <div className="graphs">
         {this.props.contributions.map((contributions) => (
           <Graph
+            key={contributions.key}
             contributions={contributions}
             loading={this.props.loading}
             overrideLargest={overrideLargest}

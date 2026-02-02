@@ -11,7 +11,7 @@ const batchCount = 6;
 async function getChangeSets(
   username: string,
   project: string,
-  skip: number = 0
+  skip = 0
 ): Promise<TfvcChangesetRef[]> {
   const promises: PromiseLike<TfvcChangesetRef[]>[] = [];
   for (let i = 0; i < batchCount; i++) {

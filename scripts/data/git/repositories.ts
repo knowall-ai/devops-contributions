@@ -23,7 +23,7 @@ export async function searchRepositories(
         (allProjects || r.project.id === proj) &&
         r.name.toLocaleLowerCase().lastIndexOf(filter, 0) === 0
     )
-    .filter((r) => !selectedMap.hasOwnProperty(r.id))
+    .filter((r) => !(r.id in selectedMap))
     .map((r) => ({ key: r.id, name: r.name }));
 }
 

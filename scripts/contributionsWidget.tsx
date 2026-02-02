@@ -3,12 +3,7 @@ import "promise-polyfill/src/polyfill";
 import * as React from "react";
 import { createRoot, Root } from "react-dom/client";
 
-import {
-  Dropdown,
-  Option,
-  FluentProvider,
-  webLightTheme,
-} from "@fluentui/react-components";
+import { Dropdown, Option, FluentProvider, webLightTheme } from "@fluentui/react-components";
 
 import { IUserContributions } from "./data/contracts";
 import { getContributions } from "./data/provider";

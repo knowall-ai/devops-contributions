@@ -76,7 +76,7 @@ function transformContributions(contributions: IUserContributions): Activity[] {
   return activities;
 }
 
-export class WidgetGraph extends React.Component<WidgetGraphProps, {}> {
+export class WidgetGraph extends React.Component<WidgetGraphProps, Record<string, never>> {
   render() {
     const { contributions } = this.props;
     const activities = transformContributions(contributions);
