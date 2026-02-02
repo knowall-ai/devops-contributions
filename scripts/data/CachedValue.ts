@@ -1,6 +1,6 @@
 export class CachedValue<T> {
   private value: T;
-  private isValueSet: boolean = false;
+  private isValueSet = false;
   private deferred: PromiseLike<T>;
   constructor(private readonly generator: () => PromiseLike<T>) {}
   public async getValue(): Promise<T> {

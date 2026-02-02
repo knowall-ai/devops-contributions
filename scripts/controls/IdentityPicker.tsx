@@ -1,11 +1,8 @@
-import { IPersonaProps } from "office-ui-fabric-react/lib-amd/components/Persona";
-import {
-  IBasePickerSuggestionsProps,
-  NormalPeoplePicker,
-} from "office-ui-fabric-react/lib-amd/components/pickers";
 import * as React from "react";
-
-import { searchIdentities } from "../data/identities/identities";
+import { Combobox, Option, Persona, Tag, TagGroup } from "@fluentui/react-components";
+import { Dismiss12Regular } from "@fluentui/react-icons";
+import { getIdentities } from "../data/identities/getIdentities";
+import { CachedValue } from "../data/CachedValue";
 
 export interface IIdentity {
   displayName: string;
@@ -24,60 +21,163 @@ export interface IIdentityPickerProps {
   forceValue?: boolean;
 }
 
-const suggestionProps: IBasePickerSuggestionsProps = {
-  suggestionsHeaderText: "Suggested People",
-  noResultsFoundText: "No results found",
-  loadingText: "Loading",
-};
+// Cache for all identities
+const identitiesCache = new CachedValue(async () => {
+  const identitiesMap = await getIdentities();
+  const identities: IIdentity[] = [];
+  for (const id in identitiesMap) {
+    const identity = identitiesMap[id];
+    identities.push({
+      displayName: identity.displayName,
+      uniqueName: identity.uniqueName || "",
+      imageUrl: identity.imageUrl || "",
+      id: identity.id,
+    });
+  }
+  return identities;
+});
 
-export class IdentityPicker extends React.Component<IIdentityPickerProps, {}> {
-  render() {
-    return (
-      <div className="identity-picker">
-        <NormalPeoplePicker
-          onResolveSuggestions={searchIdentities}
-          getTextFromItem={(persona: IPersonaProps) => persona.primaryText || "Unkown Identity"}
-          pickerSuggestionsProps={suggestionProps}
-          className={`ms-PeoplePicker identity-selector`}
-          onChange={(items) => {
-            if (this.props.onIdentityChanged) {
-              const identities: IIdentity[] = (items || []).map(
-                this._personaToIIdentity.bind(this)
-              );
-              this.props.onIdentityChanged(identities);
-            }
-          }}
-          defaultSelectedItems={this.props.identities.map(this._iIdentityToPersona.bind(this))}
-          inputProps={{
-            placeholder: this.props.placeholder,
-            readOnly: this.props.readOnly,
-          }}
-          key={"normal"}
-        />
-      </div>
+interface IdentityPickerState {
+  query: string;
+  suggestions: IIdentity[];
+  loading: boolean;
+}
+
+export class IdentityPicker extends React.Component<IIdentityPickerProps, IdentityPickerState> {
+  private comboboxId = `identity-picker-${Math.random().toString(36).substr(2, 9)}`;
+  private searchRequestId = 0;
+
+  constructor(props: IIdentityPickerProps) {
+    super(props);
+    this.state = {
+      query: "",
+      suggestions: [],
+      loading: false,
+    };
+  }
+
+  private async searchIdentities(filter: string): Promise<IIdentity[]> {
+    const lowerFilter = filter.toLocaleLowerCase();
+    const allIdentities = await identitiesCache.getValue();
+
+    if (!filter) {
+      return allIdentities.slice(0, 10); // Show first 10 when no filter
+    }
+
+    return allIdentities.filter(
+      (identity) =>
+        identity.displayName.toLocaleLowerCase().includes(lowerFilter) ||
+        identity.uniqueName.toLocaleLowerCase().includes(lowerFilter)
     );
   }
-  private _personaToIIdentity(persona: IPersonaProps): IIdentity {
-    if (!persona.primaryText) {
-      throw new Error("Identity properties not set");
-    } else if (!persona.secondaryText || !persona.id || !persona.imageUrl) {
-      console.warn(
-        `${persona.primaryText} is not a direct member of a team. (Support for aad groups is limited)`
-      );
+
+  private async handleInputChange(value: string) {
+    const requestId = ++this.searchRequestId;
+    this.setState({ query: value, loading: true });
+    const suggestions = await this.searchIdentities(value);
+    // Only update if this is still the latest request (prevents race conditions)
+    if (requestId === this.searchRequestId) {
+      this.setState({ suggestions, loading: false });
     }
-    return {
-      uniqueName: persona.secondaryText || "",
-      id: persona.id || "",
-      displayName: persona.primaryText,
-      imageUrl: persona.imageUrl || "",
-    };
   }
-  private _iIdentityToPersona(identity: IIdentity): IPersonaProps {
-    return {
-      id: identity.id,
-      primaryText: identity.displayName,
-      secondaryText: identity.uniqueName,
-      imageUrl: identity.imageUrl,
-    };
+
+  private handleSelect(_e: unknown, data: { optionValue?: string }) {
+    if (!data.optionValue) {
+      return;
+    }
+
+    const selectedIdentity = this.state.suggestions.find((i) => i.id === data.optionValue);
+
+    if (selectedIdentity && this.props.onIdentityChanged) {
+      // Add to existing selections (avoid duplicates)
+      const existing = this.props.identities || [];
+      if (!existing.find((i) => i.id === selectedIdentity.id)) {
+        this.props.onIdentityChanged([...existing, selectedIdentity]);
+      }
+    }
+
+    // Clear the search
+    this.setState({ query: "" });
+  }
+
+  private handleRemove(identityId: string) {
+    if (this.props.onIdentityChanged) {
+      const updated = this.props.identities.filter((i) => i.id !== identityId);
+      this.props.onIdentityChanged(updated);
+    }
+  }
+
+  componentDidMount() {
+    // Load initial suggestions
+    this.handleInputChange("");
+  }
+
+  render() {
+    const { identities, placeholder, readOnly, width } = this.props;
+    const { query, suggestions, loading } = this.state;
+
+    return (
+      <div className="identity-picker" style={{ width: width || "100%" }}>
+        {/* Selected identities as tags */}
+        {identities && identities.length > 0 && (
+          <TagGroup
+            onDismiss={(_e, data) => this.handleRemove(data.value)}
+            style={{ marginBottom: 8, flexWrap: "wrap", gap: 4 }}
+          >
+            {identities.map((identity) => (
+              <Tag
+                key={identity.id}
+                value={identity.id}
+                dismissible={!readOnly}
+                dismissIcon={<Dismiss12Regular />}
+                media={
+                  <Persona
+                    avatar={{ image: { src: identity.imageUrl } }}
+                    size="extra-small"
+                    name=""
+                  />
+                }
+              >
+                {identity.displayName}
+              </Tag>
+            ))}
+          </TagGroup>
+        )}
+
+        {/* Search combobox */}
+        {!readOnly && (
+          <Combobox
+            id={this.comboboxId}
+            placeholder={placeholder || "Search for users..."}
+            value={query}
+            onChange={(e) => this.handleInputChange(e.target.value)}
+            onOptionSelect={(e, data) => this.handleSelect(e, data)}
+            freeform
+            style={{ width: "100%" }}
+          >
+            {loading ? (
+              <Option key="loading" disabled text="Loading...">
+                Loading...
+              </Option>
+            ) : suggestions.length === 0 ? (
+              <Option key="no-results" disabled text="No results">
+                No results found
+              </Option>
+            ) : (
+              suggestions.map((identity) => (
+                <Option key={identity.id} value={identity.id} text={identity.displayName}>
+                  <Persona
+                    avatar={{ image: { src: identity.imageUrl } }}
+                    name={identity.displayName}
+                    secondaryText={identity.uniqueName}
+                    size="small"
+                  />
+                </Option>
+              ))
+            )}
+          </Combobox>
+        )}
+      </div>
+    );
   }
 }

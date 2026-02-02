@@ -27,7 +27,10 @@ async function hardGetAllIdentitiesInTeam(
   const client = getClient();
 
   if ("getTeamMembers" in client) {
-    const members = await (client as any as CoreHttpClient4).getTeamMembers(project.id, team.id);
+    const members = await (client as unknown as CoreHttpClient4).getTeamMembers(
+      project.id,
+      team.id
+    );
     const teamId: ITeamIdentities = {
       team: teamIdentity,
       members,

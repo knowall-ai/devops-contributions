@@ -14,7 +14,7 @@ export class BatchedCachedValue<Args, Value> {
   constructor(private readonly options: IBatchedCachedValueOptions<Args, Value>) {}
 
   public async getValue(id: string, args: Args): Promise<Value> {
-    if (this.cached[id]) {
+    if (id in this.cached) {
       return this.cached[id];
     }
     this.queued[id] = args;

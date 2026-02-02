@@ -4,7 +4,6 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = {
     entry: {
-        contributionsHub: "./scripts/contributionsHub.tsx",
         contributionsWidget: "./scripts/contributionsWidget.tsx",
         contributionsWidgetConfiguration: "./scripts/contributionsWidgetConfiguration.tsx"
     },
@@ -15,8 +14,7 @@ module.exports = {
     },
     externals: [{
         "q": true,
-        "react": true,
-        "react-dom": true
+        // Note: React 18 is bundled, not using host's React 16
     },
         /^TFS\//, // Ignore TFS/* since they are coming from VSTS host
         /^VSS\//  // Ignore VSS/* since they are coming from VSTS host

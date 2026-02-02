@@ -1,9 +1,9 @@
 ///<reference types="vss-web-extension-sdk" />
 import "promise-polyfill/src/polyfill";
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createRoot, Root } from "react-dom/client";
 
-import { Dropdown, IDropdownOption } from "office-ui-fabric-react/lib-amd/components/Dropdown";
+import { Dropdown, Option, FluentProvider, webLightTheme } from "@fluentui/react-components";
 
 import { IUserContributions } from "./data/contracts";
 import { getContributions } from "./data/provider";
@@ -13,9 +13,12 @@ import { WidgetGraph } from "./controls/WidgetGraph";
 import { IIdentity } from "./controls/IdentityPicker";
 
 type UserMode = "specific" | "all";
+type RepoMode = "specific" | "all";
 
 interface ExtendedFilter extends IContributionFilter {
   userMode?: UserMode;
+  repoMode?: RepoMode;
+  showFiltersOnWidget?: boolean;
 }
 
 interface WidgetSettings {
@@ -100,9 +103,38 @@ class ContributionsWidget extends React.Component<{ settings: WidgetSettings }, 
     }
   }
 
-  handleUserChange(option: IDropdownOption) {
-    const selectedUserId = option.key === "all" ? null : (option.key as string);
+  handleUserChange(
+    _event: React.SyntheticEvent,
+    data: { optionValue?: string; optionText?: string }
+  ) {
+    const selectedUserId = data.optionValue === "all" ? null : (data.optionValue as string);
     this.setState({ selectedUserId }, () => this.loadContributions());
+  }
+
+  renderFilterSummary() {
+    const { filter } = this.props.settings;
+    if (!filter.showFiltersOnWidget) {
+      return null;
+    }
+
+    const userLabel =
+      filter.userMode === "all"
+        ? "All contributors"
+        : filter.identities?.length
+          ? `${filter.identities.length} user${filter.identities.length > 1 ? "s" : ""}`
+          : "No users selected";
+
+    const repoLabel =
+      filter.repoMode === "specific" && filter.repositories?.length
+        ? `${filter.repositories.length} repo${filter.repositories.length > 1 ? "s" : ""}`
+        : "All repositories";
+
+    return (
+      <div className="filter-summary">
+        <span className="filter-tag">{userLabel}</span>
+        <span className="filter-tag">{repoLabel}</span>
+      </div>
+    );
   }
 
   render() {
@@ -112,61 +144,79 @@ class ContributionsWidget extends React.Component<{ settings: WidgetSettings }, 
 
     if (loading) {
       return (
-        <div className="widget-loading">
-          <div className="loading-spinner"></div>
-          <span>Loading contributions...</span>
-        </div>
+        <FluentProvider theme={webLightTheme}>
+          <div className="widget-loading">
+            <div className="loading-spinner"></div>
+            <span>Loading contributions...</span>
+          </div>
+        </FluentProvider>
       );
     }
 
     if (error) {
       return (
-        <div className="widget-error">
-          <span>Error: {error}</span>
-        </div>
+        <FluentProvider theme={webLightTheme}>
+          <div className="widget-error">
+            <span>Error: {error}</span>
+          </div>
+        </FluentProvider>
       );
     }
 
-    // Build user dropdown options when in "all" mode
-    const userOptions: IDropdownOption[] = isAllMode
-      ? [
-          { key: "all", text: "All contributors" },
-          ...allUsers.map((u) => ({ key: u.id, text: u.displayName })),
-        ]
-      : [];
+    const selectedText =
+      selectedUserId === null
+        ? "All contributors"
+        : allUsers.find((u) => u.id === selectedUserId)?.displayName || "All contributors";
 
     if (contributions.length === 0) {
       return (
-        <div className="widget-empty">
-          {isAllMode && allUsers.length > 0 && (
-            <div className="user-filter">
-              <Dropdown
-                selectedKey={selectedUserId || "all"}
-                options={userOptions}
-                onChanged={(o) => this.handleUserChange(o)}
-              />
-            </div>
-          )}
-          <span>No contributions found</span>
-        </div>
+        <FluentProvider theme={webLightTheme}>
+          <div className="widget-empty">
+            {isAllMode && allUsers.length > 0 && (
+              <div className="user-filter">
+                <Dropdown
+                  value={selectedText}
+                  onOptionSelect={(e, data) => this.handleUserChange(e, data)}
+                >
+                  <Option value="all">All contributors</Option>
+                  {allUsers.map((u) => (
+                    <Option key={u.id} value={u.id}>
+                      {u.displayName}
+                    </Option>
+                  ))}
+                </Dropdown>
+              </div>
+            )}
+            <span>No contributions found</span>
+          </div>
+        </FluentProvider>
       );
     }
 
     return (
-      <div className="widget-content">
-        {isAllMode && allUsers.length > 0 && (
-          <div className="user-filter">
-            <Dropdown
-              selectedKey={selectedUserId || "all"}
-              options={userOptions}
-              onChanged={(o) => this.handleUserChange(o)}
-            />
-          </div>
-        )}
-        {contributions.map((userContributions, index) => (
-          <WidgetGraph key={userContributions.key || index} contributions={userContributions} />
-        ))}
-      </div>
+      <FluentProvider theme={webLightTheme}>
+        <div className="widget-content">
+          {isAllMode && allUsers.length > 0 && (
+            <div className="user-filter">
+              <Dropdown
+                value={selectedText}
+                onOptionSelect={(e, data) => this.handleUserChange(e, data)}
+              >
+                <Option value="all">All contributors</Option>
+                {allUsers.map((u) => (
+                  <Option key={u.id} value={u.id}>
+                    {u.displayName}
+                  </Option>
+                ))}
+              </Dropdown>
+            </div>
+          )}
+          {contributions.map((userContributions, index) => (
+            <WidgetGraph key={userContributions.key || index} contributions={userContributions} />
+          ))}
+          {this.renderFilterSummary()}
+        </div>
+      </FluentProvider>
     );
   }
 }
@@ -179,7 +229,7 @@ function parseSettings(customSettings: string | null): WidgetSettings {
       console.warn("Failed to parse widget settings:", e);
     }
   }
-  return { filter: null as any };
+  return { filter: null as unknown as ExtendedFilter };
 }
 
 VSS.require(
@@ -189,8 +239,12 @@ VSS.require(
 
     VSS.register("ContributionsWidget", () => {
       const container = document.querySelector(".widget-container");
+      let root: Root | null = null;
 
-      const renderWidget = async (widgetSettings: any): Promise<any> => {
+      const renderWidget = async (
+        widgetSettings: { customSettings: { data: string | null } }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ): Promise<any> => {
         try {
           const settings = parseSettings(widgetSettings.customSettings.data);
 
@@ -200,7 +254,10 @@ VSS.require(
             filter = await defaultFilter.getValue();
           }
 
-          ReactDOM.render(<ContributionsWidget settings={{ filter }} />, container);
+          if (!root && container) {
+            root = createRoot(container);
+          }
+          root?.render(<ContributionsWidget settings={{ filter }} />);
 
           return WidgetHelpers.WidgetStatusHelper.Success();
         } catch (error) {
@@ -211,10 +268,10 @@ VSS.require(
       };
 
       return {
-        load: (widgetSettings: any) => {
+        load: (widgetSettings: { customSettings: { data: string | null } }) => {
           return renderWidget(widgetSettings);
         },
-        reload: (widgetSettings: any) => {
+        reload: (widgetSettings: { customSettings: { data: string | null } }) => {
           return renderWidget(widgetSettings);
         },
       };

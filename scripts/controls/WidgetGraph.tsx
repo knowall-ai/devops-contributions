@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ActivityCalendar, ThemeInput } from "react-activity-calendar";
 import { IUserContributions } from "../data/contracts";
 
 interface Activity {
@@ -10,6 +11,12 @@ interface Activity {
 interface WidgetGraphProps {
   contributions: IUserContributions;
 }
+
+// Green theme matching Zaplie styling
+const theme: ThemeInput = {
+  light: ["#1F1F1F", "#3a5e09", "#4d7a0c", "#6ba513", "#84cc16"],
+  dark: ["#1F1F1F", "#3a5e09", "#4d7a0c", "#6ba513", "#84cc16"],
+};
 
 function transformContributions(contributions: IUserContributions): Activity[] {
   const activities: Activity[] = [];
@@ -69,7 +76,7 @@ function transformContributions(contributions: IUserContributions): Activity[] {
   return activities;
 }
 
-export class WidgetGraph extends React.Component<WidgetGraphProps, {}> {
+export class WidgetGraph extends React.Component<WidgetGraphProps, Record<string, never>> {
   render() {
     const { contributions } = this.props;
     const activities = transformContributions(contributions);
@@ -92,79 +99,17 @@ export class WidgetGraph extends React.Component<WidgetGraphProps, {}> {
           </div>
         </div>
         <div className="calendar-container">
-          <ActivityCalendar activities={activities} />
-        </div>
-      </div>
-    );
-  }
-}
-
-interface ActivityCalendarProps {
-  activities: Activity[];
-}
-
-class ActivityCalendar extends React.Component<ActivityCalendarProps, {}> {
-  render() {
-    const { activities } = this.props;
-
-    // Group activities by week
-    const weeks: Activity[][] = [];
-    let currentWeek: Activity[] = [];
-
-    for (const activity of activities) {
-      const date = new Date(activity.date);
-      const dayOfWeek = date.getDay();
-
-      // Start a new week on Sunday
-      if (dayOfWeek === 0 && currentWeek.length > 0) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
-
-      currentWeek.push(activity);
-    }
-
-    // Add the last week
-    if (currentWeek.length > 0) {
-      weeks.push(currentWeek);
-    }
-
-    // Pad the first week with empty cells
-    if (weeks.length > 0) {
-      const firstDate = new Date(weeks[0][0].date);
-      const firstDayOfWeek = firstDate.getDay();
-      const padding: Activity[] = [];
-      for (let i = 0; i < firstDayOfWeek; i++) {
-        padding.push({ date: "", count: 0, level: 0 });
-      }
-      weeks[0] = [...padding, ...weeks[0]];
-    }
-
-    return (
-      <div className="activity-calendar">
-        <div className="calendar-grid">
-          {weeks.map((week, weekIndex) => (
-            <div key={weekIndex} className="week">
-              {week.map((activity, dayIndex) => (
-                <div
-                  key={dayIndex}
-                  className={`day ${activity.date ? `level-${activity.level}` : "empty"}`}
-                  title={activity.date ? `${activity.count} contributions on ${activity.date}` : ""}
-                />
-              ))}
-            </div>
-          ))}
+          <ActivityCalendar
+            data={activities}
+            theme={theme}
+            blockSize={12}
+            blockMargin={4}
+            fontSize={14}
+            showColorLegend={true}
+            showTotalCount={false}
+          />
         </div>
         <div className="calendar-footer">
-          <div className="legend">
-            <span>Less</span>
-            <div className="legend-cell level-0" />
-            <div className="legend-cell level-1" />
-            <div className="legend-cell level-2" />
-            <div className="legend-cell level-3" />
-            <div className="legend-cell level-4" />
-            <span>More</span>
-          </div>
           <div className="built-by">
             <a href="https://www.knowall.ai" target="_blank" rel="noopener noreferrer">
               Built by KnowAll AI

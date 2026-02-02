@@ -81,6 +81,24 @@ body.contributions-body {
       }
     }
 
+    .filter-summary {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid;
+      @include border-color(palette-neutral-8);
+
+      .filter-tag {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        @include background-color(palette-neutral-4);
+        @include color(palette-neutral-60);
+      }
+    }
+
     .widget-graph {
       padding: 8px;
       display: flex;
@@ -122,95 +140,12 @@ body.contributions-body {
         overflow: hidden;
       }
 
-      .activity-calendar {
-        flex: 1;
+      .calendar-footer {
         display: flex;
-        flex-direction: column;
-        min-width: 0;
-
-        .calendar-grid {
-          display: flex;
-          flex-direction: row;
-          gap: 2px;
-          flex: 1;
-          min-width: 0;
-
-          .week {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            flex: 1;
-            min-width: 0;
-
-            .day {
-              flex: 1;
-              min-height: 8px;
-              max-height: 16px;
-              border-radius: 2px;
-              aspect-ratio: 1;
-
-              &.empty {
-                visibility: hidden;
-              }
-
-              // Activity levels using Azure DevOps theme colors
-              &.level-0 {
-                @include background-color(palette-neutral-8);
-              }
-              &.level-1 {
-                @include background-color(palette-primary-tint-20);
-              }
-              &.level-2 {
-                @include background-color(palette-primary-tint-10);
-              }
-              &.level-3 {
-                @include background-color(palette-primary-shade-10);
-              }
-              &.level-4 {
-                @include background-color(palette-primary-shade-30);
-              }
-            }
-          }
-        }
-
-        .calendar-footer {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 8px;
-          flex-shrink: 0;
-        }
-
-        .legend {
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-size: 11px;
-          @include color(palette-neutral-60);
-
-          .legend-cell {
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
-
-            // Legend cells use same theme colors
-            &.level-0 {
-              @include background-color(palette-neutral-8);
-            }
-            &.level-1 {
-              @include background-color(palette-primary-tint-20);
-            }
-            &.level-2 {
-              @include background-color(palette-primary-tint-10);
-            }
-            &.level-3 {
-              @include background-color(palette-primary-shade-10);
-            }
-            &.level-4 {
-              @include background-color(palette-primary-shade-30);
-            }
-          }
-        }
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 8px;
+        flex-shrink: 0;
 
         .built-by {
           font-size: 10px;

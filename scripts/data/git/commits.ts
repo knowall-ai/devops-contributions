@@ -52,7 +52,15 @@ async function commitsForRepository(
   repoId: string,
   skip = 0
 ): Promise<GitCommitRef[]> {
-  return getCommits(repoId, yearStart, skip, batchSize, username).then((commits) => {
+  // Cast Q.IPromise to native Promise for TypeScript 5 compatibility
+  const commitsPromise = getCommits(
+    repoId,
+    yearStart,
+    skip,
+    batchSize,
+    username
+  ) as unknown as Promise<GitCommitRef[]>;
+  return commitsPromise.then((commits) => {
     if (commits.length < batchSize) {
       return commits.filter((c) => !c.comment.match(/Merged PR \d+/));
     } else {
