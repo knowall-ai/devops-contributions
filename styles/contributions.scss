@@ -41,7 +41,9 @@ body.contributions-body {
     .widget-content {
       width: 100%;
       height: 100%;
-      overflow: auto;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     .widget-loading,
@@ -81,6 +83,10 @@ body.contributions-body {
 
     .widget-graph {
       padding: 8px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
 
       .user-info {
         display: flex;
@@ -111,24 +117,37 @@ body.contributions-body {
       }
 
       .calendar-container {
-        overflow-x: auto;
+        flex: 1;
+        display: flex;
+        overflow: hidden;
       }
 
       .activity-calendar {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
         .calendar-grid {
           display: flex;
           flex-direction: row;
-          gap: 3px;
+          gap: 2px;
+          flex: 1;
+          min-width: 0;
 
           .week {
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
 
             .day {
-              width: 12px;
-              height: 12px;
+              flex: 1;
+              min-height: 8px;
+              max-height: 16px;
               border-radius: 2px;
+              aspect-ratio: 1;
 
               &.empty {
                 visibility: hidden;
@@ -154,17 +173,24 @@ body.contributions-body {
           }
         }
 
+        .calendar-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 8px;
+          flex-shrink: 0;
+        }
+
         .legend {
           display: flex;
           align-items: center;
           gap: 4px;
-          margin-top: 8px;
           font-size: 11px;
           @include color(palette-neutral-60);
 
           .legend-cell {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 2px;
 
             // Legend cells use same theme colors
@@ -182,6 +208,20 @@ body.contributions-body {
             }
             &.level-4 {
               @include background-color(palette-primary-shade-30);
+            }
+          }
+        }
+
+        .built-by {
+          font-size: 10px;
+          @include color(palette-neutral-60);
+
+          a {
+            @include color(palette-neutral-60);
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
             }
           }
         }

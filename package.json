@@ -7,9 +7,10 @@
     "package-release": "node ./node_modules/gulp/bin/gulp.js --release",
     "format": "prettier --write \"scripts/**/*.{ts,tsx}\" \"styles/**/*.scss\"",
     "format:check": "prettier --check \"scripts/**/*.{ts,tsx}\" \"styles/**/*.scss\"",
-    "lint": "eslint scripts --ext .ts,.tsx",
-    "lint:fix": "eslint scripts --ext .ts,.tsx --fix",
-    "typecheck": "tsc --noEmit"
+    "lint": "eslint scripts --ext .ts,.tsx --ignore-pattern \"__tests__\"",
+    "lint:fix": "eslint scripts --ext .ts,.tsx --fix --ignore-pattern \"__tests__\"",
+    "typecheck": "tsc --noEmit",
+    "ci": "bun run lint && bun run format:check"
   },
   "devDependencies": {
     "@types/applicationinsights-js": "^1.0.7",

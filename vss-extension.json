@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "contributions-widget",
-    "version": "3.0.10",
+    "version": "3.0.12",
     "name": "Contributions Widget",
     "scopes": [
         "vso.work",
@@ -71,14 +71,20 @@
                 "catalogIconUrl": "img/logo.png",
                 "uri": "dist/contributionsWidget.html",
                 "supportedSizes": [
-                    {"rowSpan": 1, "columnSpan": 3},
-                    {"rowSpan": 1, "columnSpan": 4},
-                    {"rowSpan": 1, "columnSpan": 5},
                     {"rowSpan": 2, "columnSpan": 4},
                     {"rowSpan": 2, "columnSpan": 5},
                     {"rowSpan": 2, "columnSpan": 6},
+                    {"rowSpan": 2, "columnSpan": 7},
+                    {"rowSpan": 2, "columnSpan": 8},
+                    {"rowSpan": 2, "columnSpan": 9},
+                    {"rowSpan": 2, "columnSpan": 10},
+                    {"rowSpan": 3, "columnSpan": 4},
                     {"rowSpan": 3, "columnSpan": 5},
-                    {"rowSpan": 3, "columnSpan": 6}
+                    {"rowSpan": 3, "columnSpan": 6},
+                    {"rowSpan": 3, "columnSpan": 7},
+                    {"rowSpan": 3, "columnSpan": 8},
+                    {"rowSpan": 3, "columnSpan": 9},
+                    {"rowSpan": 3, "columnSpan": 10}
                 ],
                 "defaultSize": {"rowSpan": 2, "columnSpan": 5},
                 "supportedScopes": ["project_team"],

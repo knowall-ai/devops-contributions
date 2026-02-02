@@ -155,14 +155,21 @@ class ActivityCalendar extends React.Component<ActivityCalendarProps, {}> {
             </div>
           ))}
         </div>
-        <div className="legend">
-          <span>Less</span>
-          <div className="legend-cell level-0" />
-          <div className="legend-cell level-1" />
-          <div className="legend-cell level-2" />
-          <div className="legend-cell level-3" />
-          <div className="legend-cell level-4" />
-          <span>More</span>
+        <div className="calendar-footer">
+          <div className="legend">
+            <span>Less</span>
+            <div className="legend-cell level-0" />
+            <div className="legend-cell level-1" />
+            <div className="legend-cell level-2" />
+            <div className="legend-cell level-3" />
+            <div className="legend-cell level-4" />
+            <span>More</span>
+          </div>
+          <div className="built-by">
+            <a href="https://www.knowall.ai" target="_blank" rel="noopener noreferrer">
+              Built by KnowAll AI
+            </a>
+          </div>
         </div>
       </div>
     );
