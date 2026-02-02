@@ -17,9 +17,13 @@ interface ICompletionDropdownProps {
   label?: string;
 }
 
+interface ICompletionDropdownState {
+  selected?: ITag[];
+}
+
 export class CompletionDropdown extends React.Component<
   ICompletionDropdownProps,
-  Record<string, never>
+  ICompletionDropdownState
 > {
   private static counter = 0;
   private readonly key: number;

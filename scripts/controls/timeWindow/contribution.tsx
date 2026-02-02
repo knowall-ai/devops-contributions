@@ -121,7 +121,7 @@ export class Commit extends React.Component<
         location={repo.name}
         locationUrl={repo.remoteUrl}
         showDay={showDay}
-        date={new Date(commit.author.date as string | number)}
+        date={new Date(commit.author.date as unknown as string)}
         className="commit"
       />
     );
