@@ -1,5 +1,3 @@
-import * as Q from "q";
-
 const collection = "extension-cache";
 
 interface IExtensionCacheEntry<T> {
@@ -46,7 +44,7 @@ export async function get<T>(key: string, hardGet: () => Promise<IHardGetValue<T
       }
       return doc.value;
     },
-    (error: TfsError): Q.Promise<T> => {
+    (error: TfsError) => {
       const status = Number(error.status);
       // If collection has not been created yet;
       if (
@@ -54,7 +52,7 @@ export async function get<T>(key: string, hardGet: () => Promise<IHardGetValue<T
         // User does not have permissions
         status === 401
       ) {
-        return hardGetAndStore() as unknown as Q.Promise<T>;
+        return hardGetAndStore();
       }
       throw error;
     }

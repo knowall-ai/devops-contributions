@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createRoot, Root } from "react-dom/client";
+import { flushSync } from "react-dom";
 import { DelayedFunction } from "VSS/Utils/Core";
 
 import { IUserContributions } from "../data/contracts";
@@ -30,9 +31,11 @@ export function renderGraphs(filter: IContributionFilter) {
       const loadingContributions = filter.identities.map(
         (user): IUserContributions => ({ key: -1, data: {}, user })
       );
-      root.render(
-        <Graphs contributions={loadingContributions} loading={true} sharedScale={false} />
-      );
+      flushSync(() => {
+        root.render(
+          <Graphs contributions={loadingContributions} loading={true} sharedScale={false} />
+        );
+      });
       timings.measure("drawSpinner");
     }
   });
@@ -42,9 +45,15 @@ export function renderGraphs(filter: IContributionFilter) {
       showSpinner.cancel();
       if (currentRender === renderNum) {
         timings.measure("getContributions");
-        root.render(
-          <Graphs contributions={contributions} loading={false} sharedScale={filter.sharedScale} />
-        );
+        flushSync(() => {
+          root.render(
+            <Graphs
+              contributions={contributions}
+              loading={false}
+              sharedScale={filter.sharedScale}
+            />
+          );
+        });
         timings.measure("drawGraph");
         trackEvent("loadGraph", filterToIProperties(filter), timings.measurements);
       }

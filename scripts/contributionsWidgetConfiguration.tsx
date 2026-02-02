@@ -168,8 +168,11 @@ VSS.require(
           notifyChange = widgetConfigurationContext.notify.bind(widgetConfigurationContext);
 
           const settings = parseSettings(widgetSettings.customSettings.data);
-          const baseFilter = settings.filter || (await defaultFilter.getValue());
-          currentFilter = { ...baseFilter, userMode: baseFilter.userMode || "specific" };
+          const baseFilter: IContributionFilter & Partial<{ userMode: UserMode }> =
+            settings.filter || (await defaultFilter.getValue());
+          const userMode: UserMode =
+            ("userMode" in baseFilter && baseFilter.userMode) || "specific";
+          currentFilter = { ...baseFilter, userMode };
 
           if (!root && container) {
             root = createRoot(container);
