@@ -54,7 +54,7 @@ export async function get<T>(key: string, hardGet: () => Promise<IHardGetValue<T
         // User does not have permissions
         status === 401
       ) {
-        return hardGetAndStore() as Q.Promise<T>;
+        return hardGetAndStore() as unknown as Q.Promise<T>;
       }
       throw error;
     }

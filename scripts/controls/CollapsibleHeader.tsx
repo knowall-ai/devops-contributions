@@ -1,36 +1,40 @@
 import * as React from "react";
-import { IconButton } from "office-ui-fabric-react/lib-amd/components/Button";
+import { Button } from "@fluentui/react-components";
+import { ChevronRight16Regular, ChevronDown16Regular } from "@fluentui/react-icons";
+
+interface CollapsibleHeaderProps {
+  title: string;
+  titleSuffix?: JSX.Element;
+  buttonName: string;
+  level: 1 | 2 | 3 | 4 | 5 | 6;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+interface CollapsibleHeaderState {
+  showChildren: boolean;
+}
 
 export class CollapsibleHeader extends React.Component<
-  {
-    title: string;
-    titleSuffix?: JSX.Element;
-    buttonName: string;
-    level: 1 | 2 | 3 | 4 | 5 | 6;
-    className?: string;
-  },
-  {
-    showChildren: boolean;
-  }
+  CollapsibleHeaderProps,
+  CollapsibleHeaderState
 > {
-  constructor(props: {
-    title: string;
-    titleSuffix?: JSX.Element;
-    buttonName: string;
-    level: 1 | 2 | 3 | 4 | 5 | 6;
-    className?: string;
-  }) {
+  constructor(props: CollapsibleHeaderProps) {
     super(props);
     this.state = { showChildren: false };
   }
+
   render() {
     const { showChildren } = this.state;
+    const ChevronIcon = showChildren ? ChevronDown16Regular : ChevronRight16Regular;
+
     return (
-      <div className={`collapsible-header ${this.props.className}`}>
-        <div className={`header`}>
-          <IconButton
+      <div className={`collapsible-header ${this.props.className || ""}`}>
+        <div className="header">
+          <Button
             className="toggle-button"
-            iconProps={{ iconName: showChildren ? "ChevronDownSmall" : "ChevronRightSmall" }}
+            appearance="subtle"
+            icon={<ChevronIcon />}
             title={`${showChildren ? "Hide" : "Show"} ${this.props.buttonName}`}
             onClick={() => this.setState({ showChildren: !this.state.showChildren })}
           />
@@ -41,6 +45,7 @@ export class CollapsibleHeader extends React.Component<
       </div>
     );
   }
+
   private getTitle() {
     switch (this.props.level) {
       case 1:

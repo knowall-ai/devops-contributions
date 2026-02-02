@@ -1,5 +1,5 @@
 import * as React from "react";
-import ActivityCalendar, { ThemeInput } from "react-activity-calendar";
+import { ActivityCalendar, ThemeInput } from "react-activity-calendar";
 import { IUserContributions } from "../data/contracts";
 
 interface Activity {
@@ -105,9 +105,8 @@ export class WidgetGraph extends React.Component<WidgetGraphProps, {}> {
             blockSize={12}
             blockMargin={4}
             fontSize={14}
-            hideColorLegend={false}
-            hideTotalCount={true}
-            showWeekdayLabels={true}
+            showColorLegend={true}
+            showTotalCount={false}
           />
         </div>
         <div className="calendar-footer">
