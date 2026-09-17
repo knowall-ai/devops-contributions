@@ -1,5 +1,7 @@
 # Contributions Widget for Azure DevOps
 
+[![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/knowall-ai/devops-contributions?label=CodeRabbit+Reviews&labelColor=171717&color=FF570A)](https://coderabbit.ai)
+
 A dashboard widget that displays a GitHub-style contribution graph tracking developer activity in Azure DevOps.
 
 ![Contributions Widget](img/logo.png)
